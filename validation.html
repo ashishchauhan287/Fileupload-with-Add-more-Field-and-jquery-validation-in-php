@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!-- begin::Head -->
+	<head>
+	</head>
+<body>
+	
+
+<form class="commentForm" id="commentForm" enctype="multipart/form-data" method="post">
+    <div id="inputs">
+
+        <p><input class="comment" placeholder="Name" name="name0" />
+            <input class="email" placeholder="Email" name="email0" />
+            <select class="gender" name="gender0"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select>
+            <input type="file" class="file" name="fileupload0">
+        </p>
+        
+    </div>
+    <input type="hidden" id="sizeofform" name="sizeofform" value="0">
+    <input class="submit" type="submit" value="Submit" />
+    <input type="button" value="add" id="addInput" />
+</form>
+</body>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+<script type="text/javascript">
+   $(document).ready(function() {
+        var numberIncr = 1; // used to increment the name for the inputs
+
+        function addInput() {
+            $('#inputs').append($('<p><input class="comment" placeholder="Name" name="name'+numberIncr+'" /><input class="eamil" placeholder="Email" name="email'+numberIncr+'" /><select class="gender" name="gender'+numberIncr+'"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select><input type="file" class="file" name="fileupload'+numberIncr+'"></p>'));
+            var sizeof = parseInt($('#sizeofform').val()) + 1;
+            $('#sizeofform').val(sizeof);
+            numberIncr++;
+        }
+
+        $('form.commentForm').on('submit', function(event) {
+
+            // adding rules for inputs with class 'comment'
+            $('input.comment').each(function() {
+                $(this).rules("add", 
+                    {
+                        required: true
+                    })
+            });            
+            $('input.email').each(function() {
+                $(this).rules("add", 
+                    {
+                        required: true,
+                        email: true
+                    })
+            }); 
+            $('select.gender').each(function() {
+                $(this).rules("add", 
+                    {
+                        required: true
+                    })
+            });   
+            $('input.file').each(function() {
+                $(this).rules("add", 
+                    {
+                        required: true,
+                        accept: "jpg|png|gif|jpeg",
+                        messages: {
+                    		accept: "extension not allowed"
+                    	}
+                    })
+            });  
+            // prevent default submit action         
+            event.preventDefault();
+
+            // test if form is valid 
+            if($('#commentForm').validate().form()) {
+
+                var formData = new FormData($(this)[0]);
+
+                $.ajax({ 
+                    url: 'server.php', 
+                    type: 'post', 
+                    data: formData, 
+                    processData: false,
+                    contentType: false,
+                    success: function(response){ 
+                        if(response != 0){ 
+                           alert(response); 
+                        } 
+                        else{ 
+                            alert(response); 
+                        } 
+                    }, 
+                }); 
+
+
+              //  console.log("validates");
+            } else {
+               // console.log("does not validate");
+            }
+        })
+
+        // set handler for addInput button click
+        $("#addInput").on('click', addInput);
+
+        // initialize the validator
+        $('form.commentForm').validate();
+
+   });
+
+jQuery.validator.addMethod("accept", function(value, element, param) {
+ return value.match(new RegExp("." + param + "$"));
+});
+
+
+</script>
+</html>
